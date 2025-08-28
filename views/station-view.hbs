@@ -1,0 +1,203 @@
+<h1 class="title">{{station.name}}</h1>
+<p class="subtitle">Station detail page</p>
+
+<div class="columns is-multiline">
+
+  <!-- location -->
+  <div class="column is-3">
+    <div class="card dark">
+      <div class="card-content has-text-centered">
+        <p class="title is-4">
+          <span class="emoji-xl">📍</span> Location
+        </p>
+        {{#if station.lat}}
+          <p class="metric">
+            <span class="value">Lat: {{station.lat}}</span>
+          </p>
+        {{else}}
+          <p class="has-text-grey">Lat: —</p>
+        {{/if}}
+
+        {{#if station.lng}}
+          <p class="metric">
+            <span class="value">Lng: {{station.lng}}</span>
+          </p>
+        {{else}}
+          <p class="has-text-grey">Lng: —</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <!-- weather -->
+  <div class="column is-3">
+    <div class="card dark">
+      <div class="card-content has-text-centered">
+        <p class="title is-4">
+          <span class="emoji-xl">⛅️</span> Weather
+        </p>
+        {{#if latest}}
+          <figure class="image is-64x64 is-inline-block">
+            <img class="icon-img" src="{{latest.icon}}" alt="Weather icon">
+          </figure>
+          <p class="metric">
+            <span class="value">{{latest.label}}</span>
+          </p>
+        {{else}}
+          <p class="has-text-grey">No current data</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <!-- temperature -->
+  <div class="column is-2">
+    <div class="card dark">
+      <div class="card-content has-text-centered">
+        <p class="title is-4">
+          <span class="emoji-xl">🌡️</span> Temp
+        </p>
+        {{#if latest}}
+          <p class="metric">
+            <span class="value">{{latest.tempC}}°C</span> ({{latest.tempF}}°F)
+          </p>
+          <p>Max: {{summary.temp.max}} | Min: {{summary.temp.min}}</p>
+        {{else}}
+          <p class="has-text-grey">—</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <!-- wind -->
+  <div class="column is-2">
+    <div class="card dark">
+      <div class="card-content has-text-centered">
+        <p class="title is-4">
+          <span class="emoji-xl">💨</span> Wind
+        </p>
+        {{#if latest}}
+          <p class="metric">
+            <span class="value">{{latest.windSpeed}} km/h</span> (Bft {{latest.windBft}})
+          </p>
+          <p>{{latest.windDirLabel}}</p>
+          <p>Max: {{summary.wind.max}} | Min: {{summary.wind.min}}</p>
+        {{else}}
+          <p class="has-text-grey">—</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <!-- pressure -->
+  <div class="column is-2">
+    <div class="card dark">
+      <div class="card-content has-text-centered">
+        <p class="title is-4">
+          <span class="emoji-xl">⏲</span> Pressure
+        </p>
+        {{#if latest}}
+          <p class="metric">
+            <span class="value">{{latest.pressure}} hPa</span>
+          </p>
+          <p>Max: {{summary.pressure.max}} | Min: {{summary.pressure.min}}</p>
+        {{else}}
+          <p class="has-text-grey">—</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{{!-- map section --}}
+{{#if station.lat}}
+<div class="box">
+  <h3 class="title is-6">Map</h3>
+  <iframe class="map-iframe"
+    src="https://www.openstreetmap.org/export/embed.html?bbox={{station.lng}},{{station.lat}},{{station.lng}},{{station.lat}}&layer=mapnik&marker={{station.lat}},{{station.lng}}">
+  </iframe>
+</div>
+{{/if}}
+
+
+
+{{!-- reports section --}}
+<div class="box">
+  <h3 class="title is-5">Reports</h3>
+  <table class="table is-fullwidth is-striped is-hoverable">
+    <thead>
+      <tr>
+        <th>Date/Time</th>
+        <th>Code</th>
+        <th>Temp</th>
+        <th>Wind Speed</th>
+        <th>Wind Direction</th>
+        <th>Pressure</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each reports}}
+      <tr>
+        <td>{{this.time}}</td>
+        <td>{{this.code}}</td>
+        <td>{{this.temp}}</td>
+        <td>{{this.windSpeed}}</td>
+        <td>{{this.windDir}}</td>
+        <td>{{this.pressure}}</td>
+        <td>
+          <form action="/station/{{../station._id}}/report/{{this._id}}/delete" method="post">
+            <button class="button is-small is-danger is-light">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <form action="/station/{{station._id}}/report" method="post" class="mt-4">
+    <div class="columns">
+      <div class="column">
+        <label class="label">Code</label>
+        <input class="input" name="code" placeholder="e.g., 800">
+      </div>
+      <div class="column">
+        <label class="label">Temperature (°C)</label>
+        <input class="input" name="temp" placeholder="00.0">
+      </div>
+      <div class="column">
+        <label class="label">Wind Speed (km/h)</label>
+        <input class="input" name="windSpeed" placeholder="00.0">
+      </div>
+      <div class="column">
+        <label class="label">Wind Direction</label>
+        <div class="select is-fullwidth">
+          <select name="windDir">
+            <option value="">--</option>
+            <option value="0">0</option>
+            <option value="45">45</option>
+            <option value="90">90</option>
+            <option value="135">135</option>
+            <option value="180">180</option>
+            <option value="225">225</option>
+            <option value="270">270</option>
+            <option value="315">315</option>
+          </select>
+        </div>
+      </div>
+      <div class="column">
+        <label class="label">Pressure (hPa)</label>
+        <input class="input" name="pressure" placeholder="0000">
+      </div>
+    </div>
+    <div class="field">
+      <button class="button is-primary">Submit Report</button>
+    <a class="button is-link is-light" href="/station/{{station._id}}/forecast" target="_blank">
+  Auto Generate Reading
+</a>
+
+    </div>
+  </form>
+</div>
+

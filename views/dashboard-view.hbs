@@ -1,12 +1,193 @@
-{{> menu active="dashboard"}}
+<h1 class="title">Welcome to WeatherTop Dashboard</h1>
+<p class="subtitle">Hello, {{firstname}} | Manage your stations below.</p>
 
-<section class="box has-text-centered">
-  <h3 class="is-3 title">
-    Main Dashboard
-  </h3>
-  <div class="section">
-    <p>
-      This is the main dashboard view
-    </p>
+{{!-- map display --}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+  #stationsMap {
+    height: 350px;        
+    margin-bottom: 20px;
+    border-radius: 10px;
+  }
+</style>
+
+<div class="box">
+  <h2 class="title is-5">Stations Map</h2>
+  <div id="stationsMap"></div>
+</div>
+
+{{!-- ======== add station form ========= --}}
+<div class="box">
+  <h2 class="title is-5">Add Station</h2>
+
+  {{!-- form to add a new weather station --}}
+  {{!-- sends a POST request to /station --}}
+  <form id="addStationForm" action="/station" method="post">
+    <div class="columns">
+      <div class="column">
+        <input class="input" name="name" placeholder="Name" required>
+      </div>
+      <div class="column">
+        <input class="input" name="lat" placeholder="Latitude">
+      </div>
+      <div class="column">
+        <input class="input" name="lng" placeholder="Longitude">
+      </div>
+      <div class="column is-narrow">
+        <button class="button is-primary">Add Station</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{{!-- ======= station list section ========= --}}
+<div id="stationsList">
+{{#if stations.length}}
+  {{!-- loop through all stations and display each one --}}
+  {{#each stations}}
+  <div class="box mb-5 station-card" data-id="{{_id}}">
+    
+    {{!-- station header (name, lat, lng, delete button) --}}
+    <div class="level">
+      <div class="level-left station-header">
+        <h2 class="title is-4">
+          <a href="/station/{{_id}}">{{name}}</a>
+        </h2>
+        {{#if lat}}<span class="coords">Lat: {{lat}}</span>{{/if}}
+        {{#if lng}}<span class="coords">Lng: {{lng}}</span>{{/if}}
+      </div>
+      <div class="level-right">
+        <form action="/station/{{_id}}/delete" method="post">
+          <button class="button is-danger is-light">Delete</button>
+        </form>
+      </div>
+    </div>
+
+    {{!-- ======== weather cards ================= --}}
+    <div class="columns is-multiline">
+      
+      {{!-- weather condition --}}
+      <div class="column is-3">
+        <div class="card dark">
+          <div class="card-content has-text-centered">
+            <p class="title is-6">Weather</p>
+            {{#if latest}}
+              <figure class="image is-48x48" style="margin:auto;">
+                <img class="icon-img" src="{{latest.icon}}" alt="">
+              </figure>
+              <p class="metric">
+                <span class="value">{{latest.label}}</span>
+              </p>
+            {{else}}
+              <p class="has-text-grey">No reports yet</p>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      {{!-- temp card --}}
+      <div class="column is-3">
+        <div class="card dark">
+          <div class="card-content has-text-centered">
+            <p class="title is-6">Temp 🌡️</p>
+            {{#if latest}}
+              <p class="metric">
+                <span class="value">{{latest.tempC}}°C</span>
+                ({{latest.tempF}}°F)
+              </p>
+              <p>Max: {{summary.temp.max}} | Min: {{summary.temp.min}}</p>
+            {{else}}
+              <p class="has-text-grey">—</p>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      {{!-- wind card --}}
+      <div class="column is-3">
+        <div class="card dark">
+          <div class="card-content has-text-centered">
+            <p class="title is-6">Wind 💨</p>
+            {{#if latest}}
+              <p class="metric">
+                <span class="value">{{latest.windSpeed}} km/h</span>
+                (Bft {{latest.windBft}})
+              </p>
+              <p>{{latest.windDirLabel}}</p>
+              <p>Max: {{summary.wind.max}} | Min: {{summary.wind.min}}</p>
+            {{else}}
+              <p class="has-text-grey">—</p>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      {{!-- pressure card --}}
+      <div class="column is-3">
+        <div class="card dark">
+          <div class="card-content has-text-centered">
+            <p class="title is-6">Pressure ⏲️</p>
+            {{#if latest}}
+              <p class="metric">
+                <span class="value">{{latest.pressure}} hPa</span>
+              </p>
+              <p>Max: {{summary.pressure.max}} | Min: {{summary.pressure.min}}</p>
+            {{else}}
+              <p class="has-text-grey">—</p>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</section>
+  {{/each}}
+{{else}}
+  <p id="emptyState">No stations yet. Please add one above.</p>
+{{/if}}
+</div>
+
+{{!-- =============  map script leaflet  ============ --}}
+<script>
+window.addEventListener("load", function () {
+
+  // build a JS array of stations directly from hbs data
+  var stations = [
+    {{#each stations}}
+      {
+        _id: "{{_id}}",
+        name: "{{name}}",
+        lat: {{#if lat}}{{lat}}{{else}}null{{/if}},
+        lng: {{#if lng}}{{lng}}{{else}}null{{/if}}
+      }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ];
+
+  // create the leaflet map and set default view ireland
+  var map = L.map("stationsMap").setView([53.4, -7.9], 6);
+
+  // add OpenStreetMap tiles to the map
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // create a group for pins (markers)
+  var group = L.featureGroup().addTo(map);
+
+  // loop through stations and add pins for each valid lat/lng
+  stations.forEach(function(s) {
+    if (Number.isFinite(s.lat) && Number.isFinite(s.lng)) {
+      L.marker([s.lat, s.lng])
+        .addTo(group)
+        .bindPopup("<strong>" + (s.name || "Station") + "</strong><br>Lat: " + s.lat + ", Lng: " + s.lng);
+    }
+  });
+
+  // if there are pins, adjust map zoom to fit all stations
+  if (group.getLayers().length) {
+    map.fitBounds(group.getBounds().pad(0.3));
+  }
+});
+</script>

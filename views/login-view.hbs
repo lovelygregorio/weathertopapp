@@ -1,0 +1,53 @@
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-6-tablet is-4-desktop">
+        <h1 class="title has-text-centered">Login</h1>
+
+        {{!-- errror message, shown only if "error" is passed from the server) --}}
+        {{#if error}}
+          <article class="message is-danger">
+            <div class="message-body">{{error}}</div>
+          </article>
+        {{/if}}
+
+        {{!-- login form --}}
+        <form action="/login" method="post" class="box">
+          <div class="field">
+            <label class="label" for="email">Email</label>
+            <div class="control">
+              <input id="email" class="input" type="email" name="email" placeholder="you@example.com" required autofocus>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="password">Password</label>
+            <div class="control has-icons-right">
+              <input id="password" class="input" type="password" name="password" placeholder="Your password" required>
+              <span class="icon is-small is-right" id="togglePwd" style="cursor:pointer;" title="Show/Hide">
+                👁️
+              </span>
+            </div>
+          </div>
+
+          <div class="field">
+            <button class="button is-primary is-fullwidth" type="submit">Login</button>
+          </div>
+        </form>
+
+        <p class="has-text-centered">
+          New here? <a href="/signup">Create an account</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // show/hide password toggle
+  document.getElementById("togglePwd")?.addEventListener("click", () => {
+    const input = document.getElementById("password");
+    input.type = input.type === "password" ? "text" : "password";
+  });
+</script>
+

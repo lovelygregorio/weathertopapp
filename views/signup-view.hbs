@@ -1,0 +1,77 @@
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-6-tablet is-4-desktop">
+        <h1 class="title has-text-centered">Create an Account</h1>
+
+        {{!-- show error message if signup failed --}}
+        {{#if error}}
+          <article class="message is-danger">
+            <div class="message-body">{{error}}</div>
+          </article>
+        {{/if}}
+
+        {{!-- signup form --}}
+        <form action="/signup" method="post" class="box">
+          <!-- First & Last Name -->
+          <div class="field is-horizontal">
+            <div class="field-body">
+              <div class="field">
+                <label class="label" for="firstName">First Name</label>
+                <div class="control">
+                  <input id="firstName" class="input" name="firstName" placeholder="John" required autofocus>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label" for="lastName">Last Name</label>
+                <div class="control">
+                  <input id="lastName" class="input" name="lastName" placeholder="Doe" required>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- email -->
+          <div class="field">
+            <label class="label" for="email">Email</label>
+            <div class="control">
+              <input id="email" class="input" type="email" name="email" placeholder="you@example.com" required>
+            </div>
+          </div>
+
+          <!-- password with toggle -->
+          <div class="field">
+            <label class="label" for="password">Password</label>
+            <div class="control has-icons-right">
+              <input id="password" class="input" type="password" name="password" placeholder="Enter password" required>
+              <span class="icon is-small is-right" id="togglePwd" style="cursor:pointer;" title="Show/Hide">
+                👁️
+              </span>
+            </div>
+          </div>
+
+          <!-- submit button -->
+          <div class="field">
+            <button class="button is-primary is-fullwidth" type="submit">
+              Create Account
+            </button>
+          </div>
+        </form>
+
+        <!-- link to Login -->
+        <p class="has-text-centered">
+          Already have an account? <a href="/login">Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  //  password toggle
+  document.getElementById("togglePwd")?.addEventListener("click", () => {
+    const input = document.getElementById("password");
+    input.type = input.type === "password" ? "text" : "password";
+  });
+</script>
+

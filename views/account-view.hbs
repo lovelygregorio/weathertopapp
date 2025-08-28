@@ -1,0 +1,64 @@
+  <!-- == account setting update user profile == -->
+<div class="columns is-centered">
+  <!-- center the form horizontally on the page -->
+  <div class="column is-half">
+    
+    <!-- page title -->
+    <h1 class="title">Your Account</h1>
+
+    <!-- account Update Form -->
+    <!-- submits data to /account/update using POST method -->
+    <form action="/account/update" method="post" class="box">
+      
+      <!-- == first and last name field== -->
+      <div class="field is-horizontal">
+        <div class="field-body">
+          
+          <!-- first name -->
+          <div class="field">
+            <label class="label">First Name</label>
+            <div class="control">
+              <!-- Pre-fill input with current user's first name -->
+              <input class="input" name="firstName" value="{{user.firstName}}">
+            </div>
+          </div>
+          
+          <!-- last name -->
+          <div class="field">
+            <label class="label">Last Name</label>
+            <div class="control">
+              <!-- Pre-fill input with current user's last name -->
+              <input class="input" name="lastName" value="{{user.lastName}}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- == email field== -->
+      <div class="field">
+        <label class="label">Email</label>
+        <div class="control">
+          <!-- pre-fill email -->
+          <input class="input" type="email" name="email" value="{{user.email}}">
+        </div>
+      </div>
+
+       <!-- == password field == -->
+      <div class="field">
+        <label class="label">Password (leave blank to keep)</label>
+        <div class="control">
+          <!-- password field is optional,if left empty, the old password stays the same -->
+          <input class="input" type="password" name="password">
+        </div>
+      </div>
+
+      <!-- == save buttons == -->
+      <div class="field">
+        <!-- Full-width submit button -->
+        <button class="button is-primary is-fullwidth">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

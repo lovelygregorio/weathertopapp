@@ -1,17 +1,27 @@
-<!DOCTYPE html>
-<html lang="en-IE">
 
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{title}}</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <title>{{title}} | Weather Services Inc. </title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <style>
+    .card.dark { background:#bce5f6; color:#646363; }
+    .metric { font-size: 1.1rem; }
+    .metric .value { font-size: 1.4rem; font-weight: 700; }
+    .icon-img { width: 48px; height: 48px; }
+    .station-header { display:flex; align-items:center; gap:.5rem; }
+    .station-header .coords { font-size: .85rem; color: #e2dddd; }
+    .map-iframe { border:0; width: 100%; height: 240px; border-radius: 12px; }
+  </style>
 </head>
-
 <body>
-  <div class="container">
-    {{{body}}}
-  </div>
+  <section class="section">
+    <div class="container">
+      {{> menu }}
+      {{{body}}}
+    </div>
+  </section>
 </body>
-
 </html>

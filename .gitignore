@@ -34,6 +34,13 @@ build/Release
 node_modules
 jspm_packages
 
+# Environment files
+.env
+.env.*
+*.env
+!.env.example
+
+
 # Optional npm cache directory
 .npm
 
